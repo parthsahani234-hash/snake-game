@@ -1,21 +1,31 @@
 body {
-  text-align: center;
-  background: #111;
-  color: white;
-  font-family: Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+    position: relative;
 }
 
 canvas {
-  border: 2px solid white;
-  margin-top: 20px;
-  background: black;
+    background: black;
 }
-button {
-    width: 50px;
-    height: 50px;
-    margin: 5px;
+
+#gameOverMessage {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 20px;
     font-size: 20px;
-    user-select: none;
-
-
+    text-align: center;
+    border-radius: 10px;
+    z-index: 10;
+    cursor: pointer;
 }
