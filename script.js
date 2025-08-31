@@ -2,22 +2,18 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let box = 20;
-let snake;
-let food;
-let score;
+let snake = [{ x: 9 * box, y: 10 * box }];
+let food = {
+  x: Math.floor(Math.random() * 19) * box,
+  y: Math.floor(Math.random() * 19) * box,
+};
+let score = 0;
+let highScore = 0;
 let d;
-let game;
 
-function init() {
-  snake = [{ x: 9 * box, y: 10 * box }];
-  food = {
-    x: Math.floor(Math.random() * 19) * box,
-    y: Math.floor(Math.random() * 19) * box,
-  };
-  score = 0;
-  d = null;
-  clearInterval(game);
-  game = setInterval(draw, 150); // ⏳ ab thoda slow speed
+// Load high score from local storage (optional)
+if(localStorage.getItem("highScore")){
+    highScore = parseInt(localStorage.getItem("highScore"));
 }
 
 document.addEventListener("keydown", direction);
@@ -50,18 +46,19 @@ function draw() {
   if (d === "DOWN") snakeY += box;
 
   if (snakeX === food.x && snakeY === food.y) {
-    score += 10; // ⭐ ab har bar +10
+    score += 10; // har food par 10 points
     food = {
       x: Math.floor(Math.random() * 19) * box,
       y: Math.floor(Math.random() * 19) * box,
     };
+    snake.push({}); // add new segment
   } else {
     snake.pop();
   }
 
   let newHead = { x: snakeX, y: snakeY };
 
-  // Game over conditions
+  // Game over
   if (
     snakeX < 0 ||
     snakeY < 0 ||
@@ -69,24 +66,28 @@ function draw() {
     snakeY >= canvas.height ||
     collision(newHead, snake)
   ) {
-    clearInterval(game);
-    setTimeout(() => {
-      if (confirm("Game Over! Your Score: " + score + "\nRestart?")) {
-        init(); // restart game
-      }
-    }, 100);
-    return;
+    alert("Game Over! Your Score: " + score);
+    if(score > highScore){
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
+    }
+    // Reset game
+    score = 0;
+    snake = [{ x: 9 * box, y: 10 * box }];
+    d = undefined;
   }
 
   snake.unshift(newHead);
 
+  // Display score and high score
   ctx.fillStyle = "white";
   ctx.font = "20px Arial";
   ctx.fillText("Score: " + score, 10, 20);
+  ctx.fillText("High Score: " + highScore, 250, 20);
 }
 
 function collision(head, array) {
-  for (let i = 0; i < array.length; i++) {
+  for (let i = 1; i < array.length; i++) {
     if (head.x === array[i].x && head.y === array[i].y) {
       return true;
     }
@@ -94,4 +95,5 @@ function collision(head, array) {
   return false;
 }
 
-init();
+let game = setInterval(draw, 100);
+
